@@ -101,12 +101,13 @@ global BASE_DIRECTORY := GetBaseDirectory(KSE_BINARY)
 ; actually act as a real launcher too; open KSE and exit immediately
 if (GetProcessName(GetCurrentParentProcessID()) != KSE_BINARY) {
     if not BASE_DIRECTORY {
-        MsgBox, % (0x10 | 0x2000), Error, % Format("Unable to find {1}.`nDid you move or rename it?", KSE_BINARY)
+        MsgBox, % (0x10 | 0x1000), Error, % Format("Unable to find {1}.`nDid you move or rename it?", KSE_BINARY)
     } else {
         Run, % Format("{1}\{2}", BASE_DIRECTORY, KSE_BINARY)
     }
 
     ExitClean()
+    exit
 }
 
 ; this code is run when launched from KSE itself
@@ -115,6 +116,7 @@ Kaillera := New Kaillera(BASE_DIRECTORY, "Net\cfg")
 Updater := New Updater(BASE_DIRECTORY, "Cfg\tools.cfg")
 
 Project64.CheckForMultipleInstances()
+Updater.CheckForUpdates(6)
 Kaillera.VerifyConfig()
 
 ; exit cleanly
