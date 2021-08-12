@@ -6,19 +6,22 @@
 class Kaillera {
     static klog := {}
 
+    base_dir := ""
     config_path := ""
     config_ini := ""
     monitors := []
 
-    __New(config_file) {
+    __New(base_dir, config_file) {
         klog := new Logger("kaillera.ahk")
         this.log := klog
 
-        this.config_file := config_file
+        this.base_dir := base_dir
+        this.config_file := Format("{1}\{2}", base_dir, config_file)
         if ! FileExist(this.config_file) {
-            this.log.warn("Config file '{1}' does not exist, aborting")
+            this.log.warn("Config file '{1}' does not exist, aborting", this.config_file)
             return false
         }
+
         this.config_ini := new IniConfig(this.config_file)
     }
 
@@ -46,7 +49,7 @@ class Kaillera {
         }
     }
 
-    ; determine if coordinates are visible on monitor
+    ; determine if the top left coordinates of a window are visible on monitor
     __EnsureWindowIsVisible(monitor, win_x, win_y) {
         if (win_x >= monitor.left and win_x <= monitor.right) {
             if (win_y >= monitor.top and win_y <= monitor.bottom) {
@@ -57,6 +60,7 @@ class Kaillera {
         return false
     }
 
+    ; get the coordinate bounds of each monitor
     __GetMonitorsBounds() {
         SysGet, monitors, MonitorCount
         loop %monitors%
